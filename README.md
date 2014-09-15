@@ -1,5 +1,5 @@
-# drink-with-strangers
-
+# clojure-api-seed
+[![Build Status](https://snap-ci.com/firthh/clojure-api-seed/branch/master/build_image)](https://snap-ci.com/firthh/clojure-api-seed/branch/master)
 FIXME
 
 ## Prerequisites
