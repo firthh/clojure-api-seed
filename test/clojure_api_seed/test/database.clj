@@ -3,7 +3,7 @@
             [midje.sweet :refer :all]))
 
 (facts "database" :it
-       (fact "can insert new account" :it
-             (db/insert-account {:name "Hugo"}) => (contains {:name "Hugo"}))
-       (fact "can insert new account" :it
-             (db/insert-account {:name "Hugo"}) => (contains {:id truthy})))
+  (fact "can insert new account" :it
+    (db/insert-account {:name "Hugo"}) => (contains {:name "Hugo"}))
+  (fact "can insert new account" :it
+    (db/insert-account {:name "Hugo"}) => (contains {:id truthy})))

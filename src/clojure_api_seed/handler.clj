@@ -6,13 +6,27 @@
             [ring.util.response :refer :all]
             [ring.middleware.defaults :refer :all]
             [clojure.data.json :as json]
-            [clojure-api-seed.database :as db]))
+            [clojure-api-seed.services.accounts :as a]))
+
+(def http-codes
+  {:success 200
+   :fail    400})
+
+(defn create-response [action-response]
+  "creates a response based on a result.
+It is assumed that all results are a map with two keys - :value and :result.
+Where value is the resulting value and result is a keyword to describe the outcome that can be used to look a http-code"
+  (let [http-status ((:result action-response) http-codes)]
+    (-> action-response
+        :value
+        response
+        (status http-status)
+        (content-type "application/json"))))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
   (POST "/account" {body :body}
-        (let [insert-result (db/insert-account body)]
-          (content-type (response insert-result) "application/json")))
+        (create-response (a/add-account body)))
   (route/resources "/")
   (route/not-found "Not Found"))
 

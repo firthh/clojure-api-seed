@@ -6,6 +6,7 @@
                  [ring/ring-json "0.3.1"]
                  [ring/ring-defaults "0.1.1"]
                  [org.clojure/data.json "0.2.5"]
+                 [bouncer "0.3.0"]
                  [org.clojure/java.jdbc "0.3.5"]
                  [postgresql/postgresql "8.4-702.jdbc4"]
                  [ragtime/ragtime.sql.files "0.3.6"]
