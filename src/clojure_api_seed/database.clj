@@ -1,7 +1,12 @@
 (ns clojure-api-seed.database
   (:use korma.db
         korma.core
-        korma.config))
+        korma.config)
+  (:require [cemerick.friend.credentials :as creds]))
+
+
+(defn bcrypt [s]
+  (creds/hash-bcrypt s :work-factor 12))
 
 (defdb pg (postgres {
                      :db       (or (System/getenv "DB_NAME")             "cas")
@@ -19,5 +24,7 @@
   (database pg))
 
 (defn insert-account [account-to-insert]
-  (insert account
-          (values account-to-insert)))
+  (let [encrypted-pw (bcrypt (:password account-to-insert))]
+    (dissoc
+     (insert account (values (assoc account-to-insert :password encrypted-pw)))
+     :password)))

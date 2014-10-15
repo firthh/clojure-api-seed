@@ -4,7 +4,8 @@
 
 (defn validate-account [account]
   (b/validate account
-              :name [[v/matches #"^.{1,40}$"] [v/required :message "Name is a required field"]]))
+              :name [[v/matches #"^.{1,40}$"] [v/required :message "Name is a required field"]]
+              :password [[v/required] [v/matches #"^.{8,}$"]]))
 
 (defn add-account [account]
   (let [validation-results (validate-account account)]
