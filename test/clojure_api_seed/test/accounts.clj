@@ -8,7 +8,7 @@
 
 (facts "account validation"
   (fact "valid account"
-    (valid? (a/validate-account valid-account)) => true)
+    (valid? (a/validate-account account)) => true)
   (fact "must have a name"
     (valid? (a/validate-account {:name nil})) => false)
   (fact "name must not be more than 40 characters"
