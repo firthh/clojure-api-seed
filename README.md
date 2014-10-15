@@ -1,6 +1,9 @@
-# drink-with-strangers
+# clojure-api-seed
+Build status -
+[![Build Status](https://snap-ci.com/firthh/clojure-api-seed/branch/master/build_image)](https://snap-ci.com/firthh/clojure-api-seed/branch/master)
 
-FIXME
+The aim of this project is to put together a decent seed project to give you a good starting point for an application.
+
 
 ## Prerequisites
 
