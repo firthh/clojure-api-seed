@@ -28,15 +28,10 @@ Where value is the resulting value and result is a keyword to describe the outco
   (POST "/account" {body :body}
         (create-response (a/add-account body)))
   (POST "/login" {body :body}
-        (create-response {:result :fail}))
-  (route/resources "/")
-  (route/not-found "Not Found"))
+        (create-response {:result :fail})))
 
 (defroutes app-routes
-  (GET "/" [] "Hello World")
-  (POST "/account" {body :body}
-        (create-response (a/add-account body)))
-  (route/resources "/")
+  unauthenticated-routes
   (route/not-found "Not Found"))
 
 (def defaults (merge api-defaults {}))
