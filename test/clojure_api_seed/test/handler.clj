@@ -48,4 +48,9 @@
   (facts "not found"
     (let [response (app (mock/request :get "/invalid"))]
       (fact "status"
-        (:status response) => 404))))
+        (:status response) => 404)))
+  (facts "authenticated routes"
+    (fact "return unauthenticated when the user is not authenticated"
+      (-> (mock/request :get "/authenticated")
+          app
+          :status) => 401)))

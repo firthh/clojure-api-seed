@@ -9,8 +9,9 @@
             [clojure-api-seed.services.accounts :as a]))
 
 (def http-codes
-  {:success 200
-   :fail    400})
+  {:success         200
+   :fail            400
+   :unauthenticated 401})
 
 (defn create-response [action-response]
   "creates a response based on a result.
@@ -23,21 +24,26 @@ Where value is the resulting value and result is a keyword to describe the outco
         (status http-status)
         (content-type "application/json"))))
 
+(defroutes authenticated-routes
+  (GET "/authenticated" _
+       (create-response {:result :unauthenticated :value {:something "Hello Authenticated User"}})))
+
 (defroutes unauthenticated-routes
-  (GET "/" [] "Hello World")
+  (GET "/" _
+       "Hello World")
   (POST "/account" {body :body}
         (create-response (a/add-account body)))
   (POST "/login" {body :body}
-        (create-response {:result :fail})))
-
-(defroutes app-routes
-  unauthenticated-routes
+        (create-response {:result :fail}))
   (route/not-found "Not Found"))
 
 (def defaults (merge api-defaults {}))
 
 (def app
-  (-> (handler/site app-routes)
+  (-> (routes
+       authenticated-routes
+       unauthenticated-routes)
+      handler/api
       wrap-json-response
       (wrap-json-body {:keywords? true :bigdecimals? true})
       (wrap-defaults defaults)
