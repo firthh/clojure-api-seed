@@ -53,4 +53,4 @@
     (fact "return unauthenticated when the user is not authenticated"
       (-> (mock/request :get "/authenticated")
           app
-          :status) => 401)))
+          :status) => 302)))

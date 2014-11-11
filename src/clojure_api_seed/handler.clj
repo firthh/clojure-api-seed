@@ -6,7 +6,11 @@
             [ring.util.response :refer :all]
             [ring.middleware.defaults :refer :all]
             [clojure.data.json :as json]
-            [clojure-api-seed.services.accounts :as a]))
+            [clojure-api-seed.services.accounts :as a]
+            [clojure-api-seed.authentication :as auth]
+            [cemerick.friend :as friend]
+            [cemerick.friend.workflows :as workflows]
+            [cemerick.friend.credentials :as creds]))
 
 (def http-codes
   {:success         200
@@ -25,8 +29,8 @@ Where value is the resulting value and result is a keyword to describe the outco
         (content-type "application/json"))))
 
 (defroutes authenticated-routes
-  (GET "/authenticated" _
-       (create-response {:result :unauthenticated :value {:something "Hello Authenticated User"}})))
+  (GET "/" _
+       (create-response {:result :success :value {:something "Hello Authenticated User"}})))
 
 (defroutes unauthenticated-routes
   (GET "/" _
@@ -39,10 +43,22 @@ Where value is the resulting value and result is a keyword to describe the outco
 
 (def defaults (merge api-defaults {}))
 
+(def users {"root" {:username "root"
+                    :password (creds/hash-bcrypt "admin_password")
+                    :roles #{::admin}}
+            "jane" {:username "jane"
+                    :password (creds/hash-bcrypt "user_password")
+                    :roles #{::user}}})
+
+(defroutes app-routes
+  (context "/authenticated" req
+   (friend/wrap-authorize authenticated-routes #{::user}))
+  unauthenticated-routes)
+
 (def app
-  (-> (routes
-       authenticated-routes
-       unauthenticated-routes)
+  (-> app-routes
+      (friend/authenticate {:credential-fn (partial creds/bcrypt-credential-fn users)
+                              :workflows [(workflows/interactive-form)]})
       handler/api
       wrap-json-response
       (wrap-json-body {:keywords? true :bigdecimals? true})
