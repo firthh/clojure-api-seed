@@ -5,12 +5,14 @@
             [compojure.route :as route]
             [ring.util.response :refer :all]
             [ring.middleware.defaults :refer :all]
+            [ring.middleware.session :as ring-session]
             [clojure.data.json :as json]
             [clojure-api-seed.services.accounts :as a]
             [clojure-api-seed.authentication :as auth]
             [cemerick.friend :as friend]
             [cemerick.friend.workflows :as workflows]
-            [cemerick.friend.credentials :as creds]))
+            [cemerick.friend.credentials :as creds]
+            [marianoguerra.friend-json-workflow :as json-auth]))
 
 (def http-codes
   {:success         200
@@ -57,10 +59,17 @@ Where value is the resulting value and result is a keyword to describe the outco
 
 (def app
   (-> app-routes
-      (friend/authenticate {:credential-fn (partial creds/bcrypt-credential-fn users)
-                              :workflows [(workflows/interactive-form)]})
+      (wrap-json-body {:keywords? true :bigdecimals? true})
+      (friend/authenticate
+       {:login-uri "/login"
+        :unauthorized-handler json-auth/login-failed
+        :workflows [(json-auth/json-login
+                     :login-uri "/login"
+                     :login-failure-handler json-auth/login-failed
+                     :credential-fn (partial creds/bcrypt-credential-fn users))]})
       handler/api
       wrap-json-response
-      (wrap-json-body {:keywords? true :bigdecimals? true})
+
       (wrap-defaults defaults)
+      (ring-session/wrap-session)
       ))

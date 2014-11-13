@@ -12,6 +12,7 @@
                  [ragtime/ragtime.sql.files "0.3.6"]
                  [korma "0.3.0"]
                  [com.cemerick/friend "0.2.1"]
+                 [org.marianoguerra/friend-json-workflow "0.2.1"]
                  [log4j "1.2.15" :exclusions [javax.mail/mail
                                               javax.jms/jms
                                               com.sun.jdmk/jmxtools

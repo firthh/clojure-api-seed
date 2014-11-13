@@ -50,7 +50,12 @@
       (fact "status"
         (:status response) => 404)))
   (facts "authenticated routes"
-    (fact "return unauthenticated when the user is not authenticated"
+    (fact "redirects when the user is not authenticated"
       (-> (mock/request :get "/authenticated")
           app
-          :status) => 302)))
+          :status) => 302)
+    (fact "login with incorrect username and password returns unauthenticated"
+      (-> (mock/request :post "/login" account-json)
+          (mock/content-type "application/json")
+          app
+          :status) => 401)))
