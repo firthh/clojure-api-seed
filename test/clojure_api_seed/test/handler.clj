@@ -4,7 +4,13 @@
             [clojure-api-seed.database :as db]
             [ring.mock.request :as mock]
             [clojure.data.json :as json]
-            [clojure-api-seed.fixtures.accounts :refer :all]))
+            [clojure-api-seed.fixtures.accounts :refer :all]
+            [clojure-api-seed.authentication :as auth]))
+
+(defn post [url body]
+  (-> (mock/request :post url body)
+      (mock/content-type "application/json")
+      app))
 
 
 (facts "routes"
@@ -55,7 +61,11 @@
           app
           :status) => 302)
     (fact "login with incorrect username and password returns unauthenticated"
-      (-> (mock/request :post "/login" account-json)
-          (mock/content-type "application/json")
-          app
-          :status) => 401)))
+      (:status (post "/login" invalid-auth-account-json)) => 401
+      (provided
+        (auth/another-fn anything) => nil))
+    (fact "login with correct username and password returns success"
+      (:status (post "/login" auth-account-json)) => 200
+      (provided
+        (auth/another-fn anything) => {:identity "root"}))
+    ))

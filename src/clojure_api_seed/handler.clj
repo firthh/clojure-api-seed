@@ -32,7 +32,7 @@ Where value is the resulting value and result is a keyword to describe the outco
 
 (defroutes authenticated-routes
   (GET "/" _
-       (create-response {:result :success :value {:something "Hello Authenticated User"}})))
+       (create-response {:result :success})))
 
 (defroutes unauthenticated-routes
   (GET "/" _
@@ -40,36 +40,25 @@ Where value is the resulting value and result is a keyword to describe the outco
   (POST "/account" {body :body}
         (create-response (a/add-account body)))
   (POST "/login" {body :body}
-        (create-response {:result :fail}))
+        (create-response {:result :success}))
   (route/not-found "Not Found"))
 
 (def defaults (merge api-defaults {}))
 
-(def users {"root" {:username "root"
-                    :password (creds/hash-bcrypt "admin_password")
-                    :roles #{::admin}}
-            "jane" {:username "jane"
-                    :password (creds/hash-bcrypt "user_password")
-                    :roles #{::user}}})
-
 (defroutes app-routes
   (context "/authenticated" req
-   (friend/wrap-authorize authenticated-routes #{::user}))
+   (friend/wrap-authorize authenticated-routes #{::admin}))
   unauthenticated-routes)
 
 (def app
   (-> app-routes
       (wrap-json-body {:keywords? true :bigdecimals? true})
+      wrap-json-response
+      (wrap-defaults defaults)
       (friend/authenticate
-       {:login-uri "/login"
-        :unauthorized-handler json-auth/login-failed
+       {:unauthorized-handler json-auth/login-failed
         :workflows [(json-auth/json-login
                      :login-uri "/login"
                      :login-failure-handler json-auth/login-failed
-                     :credential-fn (partial creds/bcrypt-credential-fn users))]})
-      handler/api
-      wrap-json-response
-
-      (wrap-defaults defaults)
-      (ring-session/wrap-session)
-      ))
+                     :credential-fn auth/cred-fn)]})
+      (ring-session/wrap-session)))
