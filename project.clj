@@ -21,8 +21,9 @@
   :ring {:handler clojure-api-seed.handler/app}
   :ragtime {:migrations ragtime.sql.files/migrations
             :database "jdbc:postgresql://localhost:5432/cas?user=postgres&password=postgres"}
-  :aliases {"unit-test" ["midje" ":filter" "-it"]
-            "integration-test" ["midje" ":filter" "it"]}
+  :aliases {"unit-test" ["midje" ":filter" "unit"]
+            "integration-test" ["midje" ":filter" "it"]
+            "functional-test" ["midje" ":filter" "e2e"]}
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring-mock "0.1.5"]

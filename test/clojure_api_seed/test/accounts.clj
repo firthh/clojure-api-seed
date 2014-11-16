@@ -6,7 +6,7 @@
 (defn- valid? [validation-result]
   (nil? (first validation-result)))
 
-(facts "account validation"
+(fact-group :unit "account validation"
   (fact "valid account"
     (valid? (a/validate-account account)) => true)
   (fact "must have a name"
